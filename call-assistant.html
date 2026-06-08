@@ -27,6 +27,34 @@
     flex-direction: column;
   }
 
+  /* ── Top nav ── */
+  #topnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #topnav a {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: color .2s;
+  }
+
+  #topnav a:hover { color: var(--text); }
+
+  #topnav .nav-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
   /* ── Progress bar ── */
   #progress-bar {
     position: sticky;
@@ -385,6 +413,13 @@
 </style>
 </head>
 <body>
+
+<!-- Top nav -->
+<div id="topnav">
+  <a href="/">&#8592; Home</a>
+  <span class="nav-title">Call Assistant</span>
+  <a href="/pitch-sheet.html">Pitch Sheet</a>
+</div>
 
 <!-- Progress bar -->
 <div id="progress-bar">

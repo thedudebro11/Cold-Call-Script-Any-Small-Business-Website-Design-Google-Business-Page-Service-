@@ -39,6 +39,33 @@
 
   section:last-child { border-bottom: none; }
 
+  /* ── Top nav ── */
+  #topnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #topnav a {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+
+  #topnav .nav-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  @media print { #topnav { display: none; } }
+
   /* ── Hero ── */
   .hero {
     padding: 64px 0 56px;
@@ -338,6 +365,12 @@
 </style>
 </head>
 <body>
+
+<div id="topnav">
+  <a href="/">&#8592; Home</a>
+  <span class="nav-title">Pitch Sheet</span>
+  <a href="/call-assistant.html">Call Assistant</a>
+</div>
 
 <div class="hero">
   <div class="container">
