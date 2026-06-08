@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get More Customers Online — Oscar | Web Design & Local SEO</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --border: #222;
+    --accent: #FF6B35;
+    --text: #f0f0f0;
+    --muted: #888;
+    --subtle: #555;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  section:last-child { border-bottom: none; }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 64px 0 56px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    background: rgba(255,107,53,.12);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,107,53,.25);
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 18px;
+    letter-spacing: -.01em;
+  }
+
+  .hero h1 em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+
+  .btn-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+
+  /* ── Section headers ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 800;
+    margin-bottom: 28px;
+    letter-spacing: -.01em;
+  }
+
+  /* ── Features ── */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .feature-icon { font-size: 24px; margin-bottom: 12px; }
+
+  .feature-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── How It Works ── */
+  .steps { display: flex; flex-direction: column; }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    position: relative;
+    padding-bottom: 32px;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-connector {
+    position: absolute;
+    left: 17px;
+    top: 36px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .step:last-child .step-connector { display: none; }
+
+  .step-body { padding-top: 5px; }
+
+  .step-body h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .step-body p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── Math ── */
+  .math-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .math-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+
+  .math-row:last-child { border-bottom: none; }
+  .math-row .label { color: var(--muted); }
+
+  .math-row .val {
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  .math-row .val.accent { color: var(--accent); }
+
+  .math-note {
+    font-size: 13px;
+    color: var(--subtle);
+    line-height: 1.6;
+  }
+
+  /* ── Pricing ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .price-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .price-card.featured { border-color: var(--accent); background: #120900; }
+
+  .price-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+
+  .price-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+
+  .price-amount {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .price-amount span { font-size: 16px; font-weight: 400; color: var(--muted); }
+
+  .price-list { list-style: none; }
+
+  .price-list li {
+    font-size: 14px;
+    color: var(--muted);
+    padding: 5px 0 5px 20px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .price-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ── Testimonial ── */
+  .testimonial {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 24px;
+  }
+
+  .testimonial blockquote {
+    font-size: 17px;
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  .testimonial-author { font-size: 13px; color: var(--muted); }
+  .testimonial-author strong { color: var(--text); }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center;
+    padding: 64px 0;
+  }
+
+  .cta-section h2 { margin-bottom: 12px; }
+
+  .cta-section p {
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-size: 17px;
+  }
+
+  .cta-section .btn-cta { font-size: 17px; padding: 16px 36px; }
+
+  .cta-contact { margin-top: 16px; font-size: 14px; color: var(--subtle); }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; color: #111; }
+    :root {
+      --bg: #fff; --surface: #f5f5f5; --border: #ddd;
+      --text: #111; --muted: #555; --subtle: #888;
+    }
+    .btn-cta { background: #FF6B35 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    section { break-inside: avoid; }
+  }
+
+  @media (max-width: 480px) {
+    .hero { padding: 40px 0 36px; }
+    section { padding: 40px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">Local Web Design &amp; Google Visibility</div>
+    <h1>More customers finding you.<br><em>Starting this month.</em></h1>
+    <p class="hero-sub">I build websites Google can rank and optimize your Google Business Profile so local customers find you — not your competitors.</p>
+    <a href="mailto:thedevguy0101@gmail.com?subject=Let%27s%20talk%20about%20my%20website" class="btn-cta">Book a Free 15-Minute Call</a>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <div class="section-label">What You Get</div>
+    <h2>Everything you need to get found locally</h2>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">&#127760;</div>
+        <h3>Custom Website</h3>
+        <p>Fast, mobile-friendly, built specifically for local search ranking and converting visitors into calls.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128205;</div>
+        <h3>Google Business Profile</h3>
+        <p>Full optimization so you show up in the local map pack when people search near you.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128202;</div>
+        <h3>Analytics Setup</h3>
+        <p>See exactly where your customers come from and what's driving calls — no guesswork.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128172;</div>
+        <h3>Ongoing Management</h3>
+        <p>Monthly review responses, content updates, and reporting so your visibility keeps growing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2>Simple. Fast. No tech headaches.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-connector"></div>
+        <div class="step-body">
+          <h3>Free 15-Minute Call</h3>
+          <p>We talk about your business, your current visibility, and what kind of customers you want more of. I show you exactly what's missing.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-connector"></div>
+        <div class="step-body">
+          <h3>I Build &amp; Optimize Everything</h3>
+          <p>Custom website, Google Business Profile optimization, and analytics — done in 2–3 weeks. You don't lift a finger.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-connector"></div>
+        <div class="step-body">
+          <h3>More Customers Find You</h3>
+          <p>Your phone rings more. If you want, I manage it monthly so the results keep compounding — reviews, content, rankings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-label">The Math</div>
+    <h2>This pays for itself in the first month</h2>
+    <div class="math-box">
+      <div class="math-row">
+        <span class="label">Average booking value</span>
+        <span class="val">$80</span>
+      </div>
+      <div class="math-row">
+        <span class="label">Extra bookings per month</span>
+        <span class="val">5</span>
+      </div>
+      <div class="math-row">
+        <span class="label">Extra monthly revenue</span>
+        <span class="val accent">$400</span>
+      </div>
+      <div class="math-row">
+        <span class="label">Monthly retainer cost</span>
+        <span class="val">$200</span>
+      </div>
+      <div class="math-row">
+        <span class="label">Net gain — month one</span>
+        <span class="val accent">+$200</span>
+      </div>
+    </div>
+    <p class="math-note">Numbers based on a typical local service business. Your booking value and results will vary — but the math almost always works in your favor. We only need a handful of extra customers to make this profitable.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2>Straightforward. No contracts.</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">One-Time Build</div>
+        <div class="price-amount">$500 – $1k</div>
+        <ul class="price-list">
+          <li>Custom website</li>
+          <li>Google Business Profile optimization</li>
+          <li>Analytics setup</li>
+          <li>Mobile-first design</li>
+          <li>You own everything</li>
+        </ul>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-name">Monthly Management</div>
+        <div class="price-amount">$200<span> / mo</span></div>
+        <ul class="price-list">
+          <li>Everything in the build</li>
+          <li>Review responses</li>
+          <li>Monthly GBP content</li>
+          <li>Listings management</li>
+          <li>Monthly performance report</li>
+          <li>Cancel anytime</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-label">What Clients Say</div>
+    <h2>Real results for local businesses</h2>
+    <div class="testimonial">
+      <blockquote>"Within two months of working with Oscar, we went from barely showing up online to getting multiple calls a week from Google. The ROI has been incredible — it paid for itself in the first 30 days."</blockquote>
+      <div class="testimonial-author"><strong>— [Client Name]</strong>, [Business Type], Tucson AZ</div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <div class="container">
+    <h2>Ready to get more customers?</h2>
+    <p>Fifteen minutes is all it takes to see exactly what you're missing online.</p>
+    <a href="mailto:thedevguy0101@gmail.com?subject=Let%27s%20talk%20about%20my%20website" class="btn-cta">Book a Free 15-Minute Call</a>
+    <div class="cta-contact">Or text / call: <a href="tel:+1">[Your Phone Number]</a></div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Call Assistant</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --border: #222;
+    --accent: #FF6B35;
+    --accent-dim: #cc5528;
+    --text: #f0f0f0;
+    --muted: #888;
+    --success: #4caf50;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Progress bar ── */
+  #progress-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+  }
+
+  #step-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #step-label span { color: var(--accent); }
+
+  .bar-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width .35s ease;
+  }
+
+  /* ── Slide container ── */
+  #slides {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    padding: 20px 16px 100px;
+    animation: fadeIn .25s ease;
+  }
+
+  .slide.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Step header ── */
+  .step-tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+  }
+
+  .step-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    line-height: 1.2;
+  }
+
+  /* ── Say this card ── */
+  .say-card {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .say-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  /* ── Bad time panel ── */
+  #bad-time-panel {
+    display: none;
+    background: #1a1000;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  #bad-time-panel.visible { display: block; }
+
+  #bad-time-panel .say-card {
+    background: #241500;
+    margin-bottom: 0;
+  }
+
+  .btn-escape {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background .2s;
+  }
+
+  .btn-escape:active { background: rgba(255,107,53,.1); }
+
+  /* ── Calculator ── */
+  .calc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .calc-box h3 {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 14px;
+  }
+
+  .calc-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .calc-row label {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .calc-row input {
+    width: 90px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 16px;
+    padding: 8px 10px;
+    text-align: right;
+  }
+
+  .calc-row input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .calc-result {
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 6px;
+  }
+
+  .calc-result .result-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .calc-result .result-line:last-child { margin-bottom: 0; }
+
+  .calc-result .result-line .val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── Notes ── */
+  .notes-wrap {
+    margin-top: 16px;
+  }
+
+  .notes-wrap label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 12px;
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* ── Bottom nav ── */
+  #nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+
+  .btn-back {
+    flex: 1;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+
+  .btn-back:active { border-color: var(--text); }
+
+  .btn-next {
+    flex: 2;
+    padding: 14px;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s;
+  }
+
+  .btn-next:active { background: var(--accent-dim); }
+
+  .btn-reset {
+    width: 100%;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ── Complete screen ── */
+  #complete-screen {
+    display: none;
+    padding: 40px 16px;
+    text-align: center;
+  }
+
+  #complete-screen.active { display: block; }
+
+  .check-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 20px;
+  }
+
+  #complete-screen h2 {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  #complete-screen p {
+    color: var(--muted);
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+
+  /* ── Tip box ── */
+  .tip {
+    background: #0d1a0d;
+    border: 1px solid #2a4a2a;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #a0c8a0;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .tip strong { color: var(--success); }
+
+  /* ── Objections list ── */
+  .objection-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .objection-item .obj-q {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ff9a7a;
+    margin-bottom: 8px;
+  }
+
+  .objection-item .obj-a {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress-bar">
+  <div id="step-label">
+    <span id="step-name">Step 1 — Opening</span>
+    <span id="step-counter">1 / 7</span>
+  </div>
+  <div class="bar-track">
+    <div class="bar-fill" id="bar-fill" style="width:14%"></div>
+  </div>
+</div>
+
+<!-- Slides wrapper -->
+<div id="slides">
+
+  <!-- STEP 1: Opening -->
+  <div class="slide active" data-step="1">
+    <div class="step-tag">Step 1</div>
+    <div class="step-title">Opening</div>
+
+    <div class="say-card">
+      <div class="say-label">Say this first</div>
+      "Did I catch you at a bad time?"
+    </div>
+
+    <div class="tip">
+      <strong>If NO:</strong> Keep going below.<br>
+      <strong>If YES:</strong> Tap the button below for the callback line.
+    </div>
+
+    <button class="btn-escape" onclick="toggleBadTime()">Bad Time — Show Callback Line</button>
+
+    <div id="bad-time-panel">
+      <div class="say-label" style="margin-bottom:8px; color:var(--accent)">Say this instead</div>
+      <div class="say-card">
+        "No worries at all — when's a better time to reach you?"
+      </div>
+      <div style="margin-top:12px; font-size:13px; color:var(--muted)">Write down their callback time in notes below, then end the call.</div>
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">If no bad time — say this</div>
+      "Perfect. Hey, I was checking out your website — looks really solid. Quick question though — how much of your business actually comes from people finding you online versus word of mouth or repeat customers?"
+    </div>
+
+    <div class="notes-wrap">
+      <label>Notes — their answer</label>
+      <textarea placeholder="e.g. most is word of mouth, not much online..."></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 2: Qualify -->
+  <div class="slide" data-step="2">
+    <div class="step-tag">Step 2</div>
+    <div class="step-title">Qualify the Pain</div>
+
+    <div class="say-card">
+      <div class="say-label">Question 1</div>
+      "Roughly how many phone calls or walk-ins do you get per month right now?"
+    </div>
+
+    <div class="notes-wrap" style="margin-bottom:14px">
+      <label>Their answer</label>
+      <textarea id="q1" placeholder="e.g. maybe 30 calls a month..."></textarea>
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">Question 2</div>
+      "Of those, how many actually turn into bookings or sales?"
+    </div>
+
+    <div class="notes-wrap" style="margin-bottom:14px">
+      <label>Their answer</label>
+      <textarea id="q2" placeholder="e.g. about half..."></textarea>
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">Question 3 — the money question</div>
+      "What's the average value of a booking for you?"
+    </div>
+
+    <div class="notes-wrap">
+      <label>Booking value — enter number, syncs to Step 3 calculator</label>
+      <input type="number" id="booking-value-input" placeholder="e.g. 80"
+        style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:16px; padding:12px; margin-top:2px;"
+        oninput="syncCalc()">
+    </div>
+  </div>
+
+  <!-- STEP 3: Math Moment -->
+  <div class="slide" data-step="3">
+    <div class="step-tag">Step 3</div>
+    <div class="step-title">The Math Moment</div>
+
+    <div class="tip">
+      <strong>Do the math out loud.</strong> This is the most powerful moment in the call — make it concrete.
+    </div>
+
+    <div class="calc-box">
+      <h3>ROI Calculator</h3>
+      <div class="calc-row">
+        <label>Booking value ($)</label>
+        <input type="number" id="calc-booking" placeholder="80" oninput="calcROI()">
+      </div>
+      <div class="calc-row">
+        <label>Extra bookings / month</label>
+        <input type="number" id="calc-bookings" placeholder="5" oninput="calcROI()">
+      </div>
+
+      <div class="calc-result">
+        <div class="result-line">
+          <span>Extra monthly revenue</span>
+          <span class="val" id="result-revenue">$0</span>
+        </div>
+        <div class="result-line">
+          <span>Monthly retainer cost</span>
+          <span style="color:var(--muted)">$200</span>
+        </div>
+        <div class="result-line">
+          <span>Net gain first month</span>
+          <span class="val" id="result-net">$0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">Say this — fill in the number above</div>
+      "So if we get you just five more bookings a month, that's <strong id="script-revenue" style="color:var(--accent)">$0</strong> in extra revenue. This pays for itself in the first month."
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">The reverse question</div>
+      "How much are you losing every month by not showing up in local search?"
+    </div>
+
+    <div class="notes-wrap">
+      <label>Notes</label>
+      <textarea placeholder="Their reaction, hesitation, or numbers they mentioned..."></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 4: Offer -->
+  <div class="slide" data-step="4">
+    <div class="step-tag">Step 4</div>
+    <div class="step-title">Introduce the Offer</div>
+
+    <div class="say-card">
+      <div class="say-label">The pitch</div>
+      "What I do is build high-converting websites Google can actually rank, optimize your Google Business Profile so people find you locally, and set up analytics so you can see exactly what's working."
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">Then add</div>
+      "One-time setup fee for the build. If you want, I manage it ongoing every month — reviews, listings, content — so you stay visible."
+    </div>
+
+    <div class="tip">
+      <strong>Don't mention price yet.</strong> Let them ask, or save it for Step 5. Keep focus on the value.
+    </div>
+
+    <div class="notes-wrap">
+      <label>Notes — their questions or reactions</label>
+      <textarea placeholder="e.g. asked about price, seemed interested in GBP..."></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 5: Close -->
+  <div class="slide" data-step="5">
+    <div class="step-tag">Step 5</div>
+    <div class="step-title">Close to a Meeting</div>
+
+    <div class="say-card">
+      <div class="say-label">The close</div>
+      "Would it make sense to grab fifteen minutes next week? I can show you exactly what you're missing."
+    </div>
+
+    <div class="tip">
+      <strong>Stop talking after you ask this.</strong> Silence is fine. Let them respond.
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">If they ask about price</div>
+      "One-time build is five hundred to a thousand depending on what you need. Ongoing management is two hundred a month — but let me show you the opportunity first, then you can decide if it makes sense."
+    </div>
+
+    <div class="notes-wrap">
+      <label>Notes — meeting time or next step</label>
+      <textarea placeholder="e.g. Tuesday 2pm, call back Thursday, sent email..."></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 6: Objections -->
+  <div class="slide" data-step="6">
+    <div class="step-tag">Step 6</div>
+    <div class="step-title">Retainer Objections</div>
+
+    <div class="objection-item">
+      <div class="obj-q">"Two hundred a month seems like a lot..."</div>
+      <div class="obj-a">"You need just four extra bookings a month for this to pay for itself. We're going to get you way more than that."</div>
+    </div>
+
+    <div class="objection-item">
+      <div class="obj-q">"I already run ads..."</div>
+      <div class="obj-a">"Most businesses spending on ads spend way more than two hundred a month and see less results. Local SEO and GBP compound — ads stop the second you stop paying."</div>
+    </div>
+
+    <div class="objection-item">
+      <div class="obj-q">"I don't know if I need the monthly..."</div>
+      <div class="obj-a">"Would you rather pay two hundred to keep those extra bookings coming, or let it slide and lose that income?"</div>
+    </div>
+
+    <div class="objection-item">
+      <div class="obj-q">"I already have a website..."</div>
+      <div class="obj-a">"That's great — the question is whether Google can rank it and whether it's converting visitors into calls. Most local business sites aren't built for either. That's exactly what I fix."</div>
+    </div>
+
+    <div class="notes-wrap">
+      <label>Notes — objections they raised</label>
+      <textarea placeholder="e.g. worried about budget, already has someone managing GBP..."></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 7: Risk Reversal -->
+  <div class="slide" data-step="7">
+    <div class="step-tag">Step 7</div>
+    <div class="step-title">Risk Reversal</div>
+
+    <div class="say-card">
+      <div class="say-label">Take away the risk</div>
+      "Do the build for five hundred. Try one month at two hundred. If you're not seeing extra customers, we part ways. But I'm confident you will be."
+    </div>
+
+    <div class="tip">
+      <strong>You're not asking them to commit forever.</strong> One month, $200. Frame it as a low-risk trial, not a contract.
+    </div>
+
+    <div class="say-card">
+      <div class="say-label">Final close</div>
+      "So — should we lock in fifteen minutes next week to walk through exactly what I'd do for your business?"
+    </div>
+
+    <div class="notes-wrap">
+      <label>Notes — outcome of this call</label>
+      <textarea placeholder="e.g. booked meeting Tuesday, said call back next week, not interested..."></textarea>
+    </div>
+  </div>
+
+</div>
+
+<!-- Complete screen -->
+<div id="complete-screen">
+  <div class="check-icon">&#10003;</div>
+  <h2>Call Complete</h2>
+  <p>Nice work. Log the outcome in your CRM and follow up within 24 hours.</p>
+  <button class="btn-reset" onclick="resetAll()">Start New Call</button>
+</div>
+
+<!-- Bottom nav -->
+<div id="nav">
+  <button class="btn-back" id="btn-back" onclick="prevStep()" style="display:none">Back</button>
+  <button class="btn-next" id="btn-next" onclick="nextStep()">Next Step</button>
+</div>
+
+<script>
+  const steps = [
+    { name: 'Opening' },
+    { name: 'Qualify the Pain' },
+    { name: 'The Math Moment' },
+    { name: 'Introduce the Offer' },
+    { name: 'Close to Meeting' },
+    { name: 'Objections' },
+    { name: 'Risk Reversal' },
+  ];
+
+  let current = 1;
+
+  function goTo(n) {
+    document.querySelector('.slide.active').classList.remove('active');
+    document.querySelector('[data-step="' + n + '"]').classList.add('active');
+    current = n;
+
+    var pct = Math.round((n / steps.length) * 100);
+    document.getElementById('bar-fill').style.width = pct + '%';
+    document.getElementById('step-name').textContent = 'Step ' + n + ' — ' + steps[n-1].name;
+    document.getElementById('step-counter').textContent = n + ' / ' + steps.length;
+
+    document.getElementById('btn-back').style.display = n > 1 ? 'block' : 'none';
+    document.getElementById('btn-next').textContent = n === steps.length ? 'Finish Call' : 'Next Step';
+
+    window.scrollTo(0, 0);
+  }
+
+  function nextStep() {
+    if (current < steps.length) {
+      goTo(current + 1);
+    } else {
+      document.getElementById('slides').style.display = 'none';
+      document.getElementById('complete-screen').classList.add('active');
+      document.getElementById('nav').style.display = 'none';
+    }
+  }
+
+  function prevStep() {
+    if (current > 1) goTo(current - 1);
+  }
+
+  function toggleBadTime() {
+    document.getElementById('bad-time-panel').classList.toggle('visible');
+  }
+
+  function calcROI() {
+    var booking = parseFloat(document.getElementById('calc-booking').value) || 0;
+    var extra   = parseFloat(document.getElementById('calc-bookings').value) || 0;
+    var revenue = booking * extra;
+    var net     = revenue - 200;
+
+    document.getElementById('result-revenue').textContent = '$' + revenue.toLocaleString();
+    document.getElementById('result-net').textContent = (net >= 0 ? '+$' : '-$') + Math.abs(net).toLocaleString();
+    document.getElementById('script-revenue').textContent = '$' + revenue.toLocaleString();
+  }
+
+  function syncCalc() {
+    var val = document.getElementById('booking-value-input').value;
+    document.getElementById('calc-booking').value = val;
+    calcROI();
+  }
+
+  function resetAll() {
+    document.querySelectorAll('textarea').forEach(function(t) { t.value = ''; });
+    document.querySelectorAll('input[type=number]').forEach(function(i) { i.value = ''; });
+    calcROI();
+    document.getElementById('bad-time-panel').classList.remove('visible');
+    document.getElementById('slides').style.display = '';
+    document.getElementById('complete-screen').classList.remove('active');
+    document.getElementById('nav').style.display = '';
+    goTo(1);
+  }
+
+  goTo(1);
+  calcROI();
+</script>
+</body>
+</html>
